@@ -23,11 +23,7 @@ public class FunctionRangeQueryExt extends SolrConstantScoreQuery implements Pos
 	    super(filter);
 	    this.rangeFilt = filter;
 	    this.setCost(100); // default behavior should be PostFiltering
-	    System.out.println("lista::"+rangeFilt.getDocuments().size());
-	    
-	    
-	   
-	  }
+	   }
 
 	 // @Override
 	  public DelegatingCollector getFilterCollector(IndexSearcher searcher) {
@@ -41,16 +37,12 @@ public class FunctionRangeQueryExt extends SolrConstantScoreQuery implements Pos
 	    int maxdoc;
 	    
 	    public FunctionRangeCollectorExt(Map fcontext) {
-	    	System.out.println("FunctionRangeCollectorExt");
-	      this.fcontext = fcontext;
+	     this.fcontext = fcontext;
 	    }
 
 	    
-	    
-	    
 	    @Override
 	    public void collect(int doc) throws IOException {
-	    	System.out.println("collect");
 	      assert doc < maxdoc;
 	      if (scorer.matches(doc)) {
 	        leafDelegate.collect(doc);

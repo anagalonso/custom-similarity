@@ -102,7 +102,7 @@ public class Util {
 			queryStringBoost += "listaBO:" + str[i].split("\\|")[0] + "^"
 					+ (norma - Integer.parseInt(str[i].split("\\|")[1])) + " ";
 		}
-		return queryString.trim() + " " + queryStringBoost;
+		return queryString.trim() + "*" + queryStringBoost;
 	}
 
 	public static String getVectorString(List<Double> topic_vector, String prefix) {
@@ -124,8 +124,6 @@ public class Util {
 		String json = "{\"text\":\"" + textQuery + "\"}";
 		Double[] vector = null;
 		String respuesta = null;
-		//System.out.println(url);
-		//System.out.println(json);
 		try {
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -159,6 +157,19 @@ public class Util {
 
 	}
 
+	
+	public static int getCota(String boostingQuery) {
+		String [] cotaComp=boostingQuery.split(" ");
+	   	double c=0d;
+	   	double cota=0;
+		for (int i=0; i<cotaComp.length; i++){    			
+		c+=Double.parseDouble(cotaComp[i].split("\\^")[1])*Double.parseDouble(cotaComp[i].split("\\^")[1]);    			
+		}
+		float epsylon =10000*0.15f;
+    	cota=2*(10000-Math.sqrt(2*epsylon));	
+    	return (int)cota;
+		
+	}
 	
 
 }

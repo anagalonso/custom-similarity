@@ -1,10 +1,7 @@
 package es.gob.minetad.custom.similarity;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.CollectionStatistics;
@@ -42,30 +39,12 @@ public class JSDSimilarity extends Similarity  {
 			this.boost = boost;
 		}
 	}
-	public static List<Double> getVectorFromString(String topic_vector, float multiplication_factor, int size, float epsylon) {
-    	//Patstat_750_3|99
-        String[] topics = topic_vector.split(" ");
-        Double[] vector = new Double[size];
-        Arrays.fill(vector,((double)1d/750));
-      //  Arrays.fill(vector,(double)epsylon);
-      // Arrays.fill(vector,0.0);
-        for(int i=0; i<topics.length;i++){
-        	String idd=topics[i].substring(topics[i].lastIndexOf("_")+1, topics[i].indexOf("|"));
-            int id      = Integer.valueOf(idd);
-            int freq    = Integer.valueOf(StringUtils.substringAfter(topics[i],"|"));
-            Double score = Double.valueOf(freq) / Double.valueOf(multiplication_factor);
-            vector[id] = score;
-        }
-        return Arrays.asList(vector);
-    }
+	
 	
 	@Override
 	public SimScorer simScorer(SimWeight weight, LeafReaderContext context) throws IOException {
 		
 		 final float boost = ((BooleanWeight) weight).boost;
-		 
-		
-		// final String vector=context.reader().document(context.ord).get("listaBO");
 		 
 		 
 		 return new SimScorer() {
@@ -75,16 +54,11 @@ public class JSDSimilarity extends Similarity  {
 			 @Override
 			 public float score(int doc, float freq) throws IOException {	
 				 float ret=0;
-				 //System.out.println("entra");
-				// getVectorFromString(vector,1000f,750,1/750);
-				 
-				 
+				
 				 if(freq > 0){ //Math.abs(boost-freq) != 0
 					 ret = boost + freq - Math.abs(boost-freq);
 					 
-				 }/* else {
-					 ret = 0;
-				 }*/
+				 }
 				
 				 return ret;
 			 }

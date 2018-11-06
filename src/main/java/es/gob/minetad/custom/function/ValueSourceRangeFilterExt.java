@@ -101,12 +101,10 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	    	        	Document document=readerContext.reader().document(doc);
 	    	        	
 	    	        	double dist=JensenShannon.similarity(query,Util.getVectorFromString(document.get("listaBO"),multiplication_factor,query.size(),1/query.size()));
-		    			 //System.out.println(doc);
-		    			  if (dist>0.5d){		    				  
-		    				  
+		    			
+		    			  if (dist>0.5d){
 		    				  document.add(new StringField("js_s", dist+"",  Store.YES));
 		    				  documents.add(document);
-		    				//  System.out.println("js_s:: "+document.get("js_s"));
 		    				  filtra=true;
 		    			  }
 	    	        	}catch (Exception e) {
@@ -142,8 +140,7 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	  
 	  @Override
 	  public void createWeight(Map context, IndexSearcher searcher) throws IOException {
-		  System.out.println("createWeight");
-	    valueSource.createWeight(context, searcher);
+		 valueSource.createWeight(context, searcher);
 	  }
 
 	  @Override
@@ -162,8 +159,7 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 
 	  @Override
 	  public boolean equals(Object o) {
-		  System.out.println("equals");
-	    if (this == o) return true;
+		if (this == o) return true;
 	    if (!(o instanceof ValueSourceRangeFilterExt)) return false;
 	    ValueSourceRangeFilterExt other = (ValueSourceRangeFilterExt)o;
 

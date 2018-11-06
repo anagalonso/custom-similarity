@@ -45,13 +45,13 @@ public class JSTransformerFactory extends TransformerFactory {
 	    	doc.setField( getName(), ""+dist);
 	    	//transform(doc,id,(float)dist);
 		}
-	    @Override
+	   /* @Override
 	    public void transform(SolrDocument doc, int docid, float score) {
 	      if( context != null && context.wantsScores() ) {
 	          doc.setField( getName(), score );
 	         
 	      }
-	    }
+	    }*/
 	
 }
 }
