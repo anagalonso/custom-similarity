@@ -23,13 +23,12 @@ public class JSDSimilarity extends Similarity  {
 	@Override
 	public long computeNorm(FieldInvertState state) {
 		
-		return 1;
+		return 0;
 	}
 
 	@Override
 	public SimWeight computeWeight(float boost, CollectionStatistics collectionStats, TermStatistics... termStats) {
-		
-	    return new BooleanWeight(boost);
+		return new BooleanWeight(boost);
 	}
 	
 	private static class BooleanWeight extends SimWeight {
@@ -57,7 +56,6 @@ public class JSDSimilarity extends Similarity  {
 				
 				 if(freq > 0){ //Math.abs(boost-freq) != 0
 					 ret = boost + freq - Math.abs(boost-freq);
-					 
 				 }
 				
 				 return ret;

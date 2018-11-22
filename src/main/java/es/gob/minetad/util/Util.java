@@ -3,12 +3,17 @@ package es.gob.minetad.util;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.request.SolrQueryRequest;
+import org.apache.solr.search.QParser;
 
 public class Util {
 	
@@ -41,7 +46,7 @@ public class Util {
 		Double[] vector = new Double[size];
 		Arrays.fill(vector, ((double) 1 / size));
 		for (int i = 0; i < topics.length; i++) {
-			String idd = topics[i].substring(topics[i].lastIndexOf("_") + 1, topics[i].indexOf("|"));
+			String idd = topics[i].substring(topics[i].lastIndexOf("t") + 1, topics[i].indexOf("|"));
 			int id = Integer.valueOf(idd);
 			int freq = Integer.valueOf(StringUtils.substringAfter(topics[i], "|"));
 			Double score = Double.valueOf(freq) / Double.valueOf(multiplication_factor);
@@ -96,7 +101,7 @@ public class Util {
 	public static String getQuery(String vectorString, int norma) {
 		String queryString = "";
 		String queryStringBoost = "";
-		String[] str = vectorString.split(" ");
+		String[] str = vectorString.trim().split(" ");
 		for (int i = 0; i < str.length; i++) {
 			queryString += "sumTotalTermFreq(listaBO:" + str[i] + ") ";
 			queryStringBoost += "listaBO:" + str[i].split("\\|")[0] + "^"
@@ -105,27 +110,45 @@ public class Util {
 		return queryString.trim() + "*" + queryStringBoost;
 	}
 
+	
+	   public static String getVectorStringd(List<Double> topic_vector, float multiplication_factor, float epsylon) {
+	        String result = "";
+	        for(int i=0; i<topic_vector.size();i++){
+	            int freq = (int) (topic_vector.get(i) * multiplication_factor);
+	            //cambio pruebas David
+	            if(freq > (epsylon*multiplication_factor)){
+	          //  if(freq > 0){  
+	            result += "t"+i + "|" + freq + " ";
+	            }
+	        }
+	        return result;
+	    }
 	public static String getVectorString(List<Double> topic_vector, String prefix) {
 		String result = "";
-		float multiplication_factor = Double.valueOf(1 * Math.pow(10, String.valueOf(topic_vector.size()).length() + 1))
-				.floatValue();
-		;
+		float epsylon=1/topic_vector.size();
+		float multiplication_factor =Double.valueOf(1 * Math.pow(10, String.valueOf(topic_vector.size()).length() + 1)).floatValue();
 		for (int i = 0; i < topic_vector.size(); i++) {
-			if ((int) (topic_vector.get(i) * multiplication_factor) > 0) {
-				result += prefix + "_" + i + "|" + (int) (topic_vector.get(i) * multiplication_factor) + " ";
+			 int freq = (int) (topic_vector.get(i) * multiplication_factor);
+			//if ((int) (topic_vector.get(i) * multiplication_factor) > 0) {
+			 if(freq > (epsylon*multiplication_factor)){
+				result += prefix + i + "|" + (int) freq + " ";
 			}
 		}
 		return result;
 	}
+	
+	
+	
 
-	public static Double[] getVectorFromText(String textQuery, String model) {
+	public static Double[] getVectorFromText(String url, String textQuery, String model, boolean topics) {
+		
 
-		String url = "http://librairy.linkeddata.es/" + model + "/shape";
-		String json = "{\"text\":\"" + textQuery + "\"}";
+		String urlModel = "http://"+url+"/" + model + "/inferences";
+		String json = "{\"text\":\"" + textQuery +"\" , \"topics\":"+topics +"}";
 		Double[] vector = null;
 		String respuesta = null;
 		try {
-			URL obj = new URL(url);
+			URL obj = new URL(urlModel);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
@@ -156,20 +179,75 @@ public class Util {
 		return vector;
 
 	}
+	
+	public static Double[] getVectorFromText(String texto) {
+	
+		String urlModel = "http://172.17.251.193:8000/model/inferences";//"http://"+url+"/" + model + "/inferences";
+		String json = "{\"text\":\"" + texto +"\" , \"topics\":"+"false" +"}";
+		Double[] vector = null;
+		String respuesta = null;
+		try {
+			URL obj = new URL(urlModel);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setDoOutput(true);
+			con.setRequestMethod("GET");
+			OutputStream os = con.getOutputStream();
+			os.write(json.getBytes("UTF-8"));
+			os.close();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			String res = response.toString();
+			respuesta = res.substring(res.indexOf("[") + 1, res.indexOf("]"));
+			String[] vectorS = respuesta.split(",");
+			vector = new Double[vectorS.length];
+			for (int i = 0; i < vectorS.length; i++) {
+				vector[i] = Double.parseDouble(vectorS[i]);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vector;
+
+	}
 
 	
-	public static int getCota(String boostingQuery) {
+	
+	
+	public static int getCota(String boostingQuery, float epsylon) {
+	 	double cota=0;
 		String [] cotaComp=boostingQuery.split(" ");
 	   	double c=0d;
-	   	double cota=0;
+	  
 		for (int i=0; i<cotaComp.length; i++){    			
 		c+=Double.parseDouble(cotaComp[i].split("\\^")[1])*Double.parseDouble(cotaComp[i].split("\\^")[1]);    			
 		}
-		float epsylon =10000*0.15f;
-    	cota=2*(10000-Math.sqrt(2*epsylon));	
+		//ojo no estamos aplicando la cota como tal
+		cota=1000-Math.sqrt(2*0.01);	
     	return (int)cota;
 		
 	}
 	
+	 public static String getVectorString(List<Double> topic_vector, float multiplication_factor, float epsylon) {
+	        String result = "";
+	        for(int i=0; i<topic_vector.size();i++){
+	            int freq = (int) (topic_vector.get(i) * multiplication_factor);
+	            //cambio pruebas David
+	            if(freq > (epsylon*multiplication_factor)){
+	          //  if(freq > 0){  
+	            result += "t"+i + "|" + freq + " ";
+	            }
+	        }
+	        return result;
+	    }
+	
+
 
 }

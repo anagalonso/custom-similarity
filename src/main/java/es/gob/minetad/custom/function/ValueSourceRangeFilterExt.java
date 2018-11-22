@@ -31,6 +31,7 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	  private final boolean includeUpper;
 	  private final List<Double> query;
 	  private final float multiplication_factor;
+	  private final float epsylon;
 	  private final List<Document> documents=new ArrayList ();
 
 	  public ValueSourceRangeFilterExt(ValueSource valueSource,
@@ -38,15 +39,15 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	                                String upperVal,
 	                                boolean includeLower,
 	                                boolean includeUpper,
-	                                List<Double> query,
-	                                float multiplication_factor) {
+	                                List<Double> query) {
 	    this.valueSource = valueSource;
 	    this.lowerVal = lowerVal;
 	    this.upperVal = upperVal;
 	    this.includeLower = includeLower;
 	    this.includeUpper = includeUpper;
 	    this.query=query;
-	    this.multiplication_factor=multiplication_factor;
+	    this.epsylon=1/query.size();
+	    this.multiplication_factor= Double.valueOf(1*Math.pow(10,String.valueOf(query.size()).length()+1)).floatValue();;
   }
 
 	  public ValueSource getValueSource() {
