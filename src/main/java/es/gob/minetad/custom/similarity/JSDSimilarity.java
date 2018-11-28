@@ -18,6 +18,7 @@ public class JSDSimilarity extends Similarity  {
 	
 
 	public JSDSimilarity() {
+
 	}
 
 	@Override
@@ -42,6 +43,7 @@ public class JSDSimilarity extends Similarity  {
 	
 	@Override
 	public SimScorer simScorer(SimWeight weight, LeafReaderContext context) throws IOException {
+
 		
 		 final float boost = ((BooleanWeight) weight).boost;
 		 
@@ -53,6 +55,7 @@ public class JSDSimilarity extends Similarity  {
 			 @Override
 			 public float score(int doc, float freq) throws IOException {	
 				 float ret=0;
+				 
 				
 				 if(freq > 0){ //Math.abs(boost-freq) != 0
 					 ret = boost + freq - Math.abs(boost-freq);

@@ -39,6 +39,7 @@ public class JSTransformerFactory extends TransformerFactory {
 	    @Override
 	    public void transform(SolrDocument doc, int id)
 	    {
+	    	
 	    	List <Double> query=Util.getVectorFromString(this.context.getRequest().getParams().get("shape"));
 	    	Object v = doc.getFirstValue("listaBO");
 	    	double dist=JensenShannon.similarity(query,Util.getVectorFromString(((IndexableField)v).stringValue(),Float.parseFloat(this.context.getRequest().getParams().get("multiplicationFactor")),query.size(),1/query.size()));
