@@ -56,8 +56,6 @@ public class Util {
 	}
 
 	public static List<Double> cleanZerosDocTopicVector(List<Double> docTopicValues) {
-		// List<Double> docTopicVector = new ArrayList<>(numTopics);
-
 		int numTopics = docTopicValues.size();
 		Double[] docTopicVector = new Double[numTopics];
 		// find zero

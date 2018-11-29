@@ -72,7 +72,7 @@ public class FunctionRangeQParserPluginExt extends QParserPlugin {
 	        	vs = new QueryValueSource(funcQ, 0.0f);
 	        }
 
-	        String l = Util.getCota(consulta.split("\\*")[1],1/shape.size())+"";//localParams.get("l");
+	        String l = Util.getCota(consulta.split("\\*")[1],Float.parseFloat(params.get("epsylon")))+"";
 	        String u = localParams.get("u");
 	        boolean includeLower = localParams.getBool("incl",true);
 	        boolean includeUpper = localParams.getBool("incu",true);

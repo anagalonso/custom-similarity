@@ -32,10 +32,8 @@ public class AlarmTransformerFactory extends TransformerFactory {
 	SolrClient solrClient=null;	
 	 
 	@Override
-	public DocTransformer create(String field, SolrParams params, SolrQueryRequest req) {
-		
-       solrClient = new EmbeddedSolrServer(req.getCore());
-		
+	public DocTransformer create(String field, SolrParams params, SolrQueryRequest req) {		
+       solrClient = new EmbeddedSolrServer(req.getCore());		
 		return new AlarmTransformer(field,solrClient);
 	}
 
@@ -90,7 +88,7 @@ public class AlarmTransformerFactory extends TransformerFactory {
 	   	 
 	   	    List<TermsResponse.Term> terms=  response.getTermsResponse().getTerms(newParams.get("terms.fl"));
 	        JSONObject alarmas = new JSONObject();
-	        JSONArray listAlarmas = new JSONArray();
+	        JSONArray listAlarmas = new JSONArray(); 
 	        
 	        for (TermsResponse.Term term:terms) {
 	        	JSONObject alGroup = new JSONObject();
@@ -103,7 +101,7 @@ public class AlarmTransformerFactory extends TransformerFactory {
 	        		Document d=this.context.getSearcher().doc(di.nextDoc());
 	        		JSONObject al = new JSONObject();
 	        		al.put("id", d.get("id"));
-	        		al.put("name_s", d.get("name_s"));
+	        		al.put(newParams.get("fieldName"), d.get(newParams.get("fieldName")));
 	        		list.add( al);
 	        	}
 	        	alGroup.put("DocumentsList", list);
