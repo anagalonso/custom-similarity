@@ -30,8 +30,9 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	  private final boolean includeLower;
 	  private final boolean includeUpper;
 	  private final List<Double> query;
-	  private final float multiplication_factor;
+	  private final int multiplication_factor;
 	  private final float epsylon;
+	  private final double threshold;
 	  private final List<Document> documents=new ArrayList ();
 
 	  public ValueSourceRangeFilterExt(ValueSource valueSource,
@@ -39,7 +40,9 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	                                String upperVal,
 	                                boolean includeLower,
 	                                boolean includeUpper,
-	                                List<Double> query) {
+	                                List<Double> query,
+	                                int multiplication_factor,
+	                                double threshold) {
 	    this.valueSource = valueSource;
 	    this.lowerVal = lowerVal;
 	    this.upperVal = upperVal;
@@ -47,7 +50,8 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	    this.includeUpper = includeUpper;
 	    this.query=query;
 	    this.epsylon=1/query.size();
-	    this.multiplication_factor= Double.valueOf(1*Math.pow(10,String.valueOf(query.size()).length()+1)).floatValue();;
+	    this.multiplication_factor= multiplication_factor;//Double.valueOf(1*Math.pow(10,String.valueOf(query.size()).length()+1)).floatValue();
+	    this.threshold=threshold;
   }
 
 	  public ValueSource getValueSource() {
@@ -103,9 +107,9 @@ public class ValueSourceRangeFilterExt  extends SolrFilter {
 	    	        	
 	    	        	double dist=JensenShannon.similarity(query,Util.getVectorFromString(document.get("listaBO"),multiplication_factor,query.size(),1/query.size()));
 		    			
-		    			  if (dist>0.5d){
-		    				  document.add(new StringField("js_s", dist+"",  Store.YES));
-		    				  documents.add(document);
+		    			  if (dist>threshold){
+		    				 // document.add(new StringField("js_s", dist+"",  Store.YES));
+		    				  //documents.add(document);
 		    				  filtra=true;
 		    			  }
 	    	        	}catch (Exception e) {

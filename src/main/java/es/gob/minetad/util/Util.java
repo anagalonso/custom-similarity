@@ -109,6 +109,8 @@ public class Util {
 	}
 
 	
+	
+	
 	   public static String getVectorStringd(List<Double> topic_vector, float multiplication_factor, float epsylon) {
 	        String result = "";
 	        for(int i=0; i<topic_vector.size();i++){
@@ -216,22 +218,38 @@ public class Util {
 
 	}
 
+	public static int getCota1(String multiplicationFactor, float epsylon) {
+		double cota=0;
+		cota=Integer.parseInt(multiplicationFactor)-Math.sqrt(2*0.01);	
+		return (int)cota;
+		
+	}
 	
 	
-	
-	public static int getCota(String boostingQuery, float epsylon) {
+	public static int getCota2(String boostingQuery, float epsylon) {
 	 	double cota=0;
 		String [] cotaComp=boostingQuery.split(" ");
 	   	double c=0d;
 	  
 		for (int i=0; i<cotaComp.length; i++){    			
-		c+=Double.parseDouble(cotaComp[i].split("\\^")[1])*Double.parseDouble(cotaComp[i].split("\\^")[1]);    			
+		c+=Double.parseDouble(cotaComp[i].split("\\^")[1]);//*Double.parseDouble(cotaComp[i].split("\\^")[1]);    			
 		}
-		//ojo no estamos aplicando la cota como tal
-		cota=1000-Math.sqrt(2*0.01);	
-    	return (int)cota;
+		
+		return (int)cota;
 		
 	}
+	  public static int getCota(String boostingQuery, float epsylon) {
+		 	double cota=0;
+			String [] cotaComp=boostingQuery.split(" ");
+		   	double c=0d;
+		  
+			for (int i=0; i<cotaComp.length; i++){    			
+			c+=Double.parseDouble(cotaComp[i].split("\\|")[1]);  			
+			}
+			cota=c-Math.sqrt(2*0.01);	
+	    	//return 2*(int)cota;
+			return (int)cota;
+		}
 	
 	 public static String getVectorString(List<Double> topic_vector, float multiplication_factor, float epsylon) {
 	        String result = "";

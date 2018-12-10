@@ -36,12 +36,19 @@ public class PercentTranformerFactory extends TransformerFactory {
 	    public void transform(SolrDocument doc, int id)
 	    {
 	    	double porcen = 0;
-	    	
+	    	String consulta="*:*";
 	    	try {
+	    	String fq=this.context.getRequest().getParams().get("fq");
+	    	if (fq!=null) {
+	    		consulta=consulta+" AND "+fq;
+	    	}
 	    		
 	    	Query q=QParser.getParser("*:*", null, this.context.getRequest()).getQuery();
+	    	
 		    int total=context.getSearcher().count(q);
-		    int results=context.getSearcher().count(context.getQuery());
+		    Query qq=QParser.getParser(consulta, null, this.context.getRequest()).getQuery();
+		    int results=context.getSearcher().count(qq);
+		    System.out.println("TOTAL :"+results+"  "+context.getQuery().toString()+"  "+qq.toString());
 		    porcen = results*100 /total;
 	    	
 	    	}catch (Exception e) {
