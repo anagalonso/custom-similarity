@@ -218,6 +218,37 @@ public class Util {
 
 	}
 
+	public static String getTopicNeighbours (String url, int topicId, int neighboursSize) {
+		
+		String urlModel = "http://"+url+"/" +topicId + "/neighbours?max="+neighboursSize;
+		String respuesta = null;
+		try {
+			URL obj = new URL(urlModel);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setDoOutput(true);
+			con.setRequestMethod("GET");
+			//OutputStream os = con.getOutputStream();
+			//os.write(json.getBytes("UTF-8"));
+		//	os.close();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			String res = response.toString();
+			respuesta = res.substring(res.indexOf("[") , res.indexOf("]")+1);
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return respuesta;
+		
+	}
 	public static int getCota1(String multiplicationFactor, float epsylon) {
 		double cota=0;
 		cota=Integer.parseInt(multiplicationFactor)-Math.sqrt(2*0.01);	
